@@ -1,0 +1,123 @@
+- language: php
+  rules:
+  - score: -1
+    value: (?s)<%.*Server\.(Execute|ScriptTimeOut|createobject).*\s*%>
+  - score: 1
+    value: ^<\?php
+  - score: 1
+    value: (?s)^\s*<\?php.+
+  - score: 1
+    value: (?s)<\?.*\$_(GET|POST|_SERVER|_REQUEST)\[
+  - score: 1
+    value: <\?.*include\s*\("?.*"?\);?\s*\?>
+  - score: 1
+    value: (?s)<\?.*(Header|session_start|set_time_limit|error_reporting|@shell_exec|@exec)\(.*\?>	
+  - score: 1
+    value: (?s)<\?.*(class)\s*\{.*\?>	
+  - score: 1
+    value: (?s)<\?.*(fread|copy|fputs|pack|realpath|unlink|rmdir|fclose|phpinfo|mysql_fetch_array|fsockopen|fgets|fwrite|fopen|eval|header|echo)\s*\(.*\?>
+  - score: 1	
+    value: (?s)^\s*<\?=\s*$.*?>
+  - score: 1	
+    value: (?i)(?s)<script\s+language="?php"?\s*>.*</script>	
+  - score: 1	
+    value: (?s)^\s*<\?.*if.*{}\?>.*<\?>\?>
+  - score: 1
+    value: '\#!/usr/bin/env\s+php'
+  - score: 0.5
+    value: <\?php.+
+  - score: 0.5
+    value: (?s)<\?.*\$[A-Za-z_0-9]+.*\?>
+  - score: 0.6
+    value: \$_(SERVER|POST|GET|REQUEST|_SESSION)\[
+  - score: 0.5
+    value: (?s)<\?.*(define|require_once|require|dirname).*\?>
+  - score: 0.4
+    value: function\s+[a-zA-Z_]{1,512}\s+(.*)\s+{.*}
+  - score: 0.3
+    value: (?s)explode\s*\(			
+- language: jsp
+  rules:
+  - score: 0.1
+    value: <%!.+%>
+  - score: 1
+    value: <%@\s*page\s+language="java\..*\s*%>
+  - score: 1
+    value: <%@.*\s*page\s+.*import="java\..+\s*%>
+  - score: 1
+    value: (?s)<%@.*\s*page\s+.*import="java\..+\s*%>
+  - score: 1
+    value: (?s)<%.*(request\.getParameter|java\.io).*%>	
+- language: asp
+  rules:
+  - score: -1
+    value: <%@\s*page\s+language="java\..*\s*%>
+  - score: -1
+    value: <%@.*\s*page\s+.*import="java\..+\s*%>
+  - score: -1
+    value: (?i)<%@.*\s*import Namespace="?System\..*%>	
+  - score: 1
+    value: (?i)(?s)<%@\s*Language\s*=\s*"?VBScript"?\s*.*%>
+  - score: 1
+    value: (?i)(?s)<SCRIPT LANGUAGE="?VBScript"?\s*>\s*<%.+%>\s*</SCRIPT>
+  - score: 1
+    value: (?i)(?s)<%.*Server\.(Execute|ScriptTimeOut|createobject).*\s*%>
+  - score: 1
+    value: (?i)<%@\s*LANGUAGE\s*=\s*VBScript\.Encode\s*.*%>
+  - score: 1
+    value: (?i)<%.*(adodb\.connection|ADODB\.RecordSet|ReDim|ADODB\.Stream).*%>
+  - score: 1
+    value: (?i)<%=.*(Application|server\.urlEncode)\("?[A-Za-z_0-9]+"?\).*%>
+  - score: 1
+    value: (?i)(?s)<%.*(CreateTextFile|trace|session\.Contents|CreateNavLink|WshShell\.Run).*%>
+  - score: 1
+    value: (?i)(?s)<%.*(page\.display\(execute\(|Session\(|Public\s+Sub|Private\s+Sub|Public\s+Function).*%>
+  - score: 1
+    value: (?i)(?s)<%.*function\s+[A-Za-z_0-9]+\s*\([A-Za-z_0-9]*\).*end\s+function.*%>
+  - score: 0.9
+    value: (?i)<!--.*include\s+(file|VIRTUAL)=".*\.asp"\s*-->
+  - score: 0.8
+    value: (?i)<SCRIPT\s*language="?vbscript".*>
+  - score: 0.9
+    value: (?i)(?s)<%.*request\.(querystring|ServerVariables|BinaryWrite|ContentType|Charset|AddHeader).*%>
+  - score: 0.9
+    value: (?i)(?s)<%.*Response\.(Write|Flush|Buffer|BinaryWrite|ContentType|Charset|AddHeader|redirect).*%>
+  - score: 0.8
+    value: (?i)(?s)<%.*(eval|execute).*%>
+  - score: 0.8
+    value: (?i)<!--.*include\s+file=".*\.asp"\s*-->
+  - score: 0.5
+    value: (?i)(?s)<%.*request\(".+"\).*%>
+  - score: 0.5
+    value: (?s)<%.+%>	
+  - score: 0.5
+    value: (?i)(?s)<%.*\b(Public\s+Property|End\s+Class|elseif|Dim|Set|vbcrlf|Select|Case|Call|then|<>|IsNumeric|Trim|Next|wend)\b.*%>
+  - score: 0.5
+    value: (?i)<.*runat\s*=\s*server.*>	
+  - score: 0.5
+    value: (?i)(?s)<%.*(writeln|createobject|replace)\(.*%>		
+  - score: 0.3
+    value: (?i)(?s)<%.*("Scripting\.Dictionary"|private|public).*%>			
+- language: aspx
+  rules:
+  - score: 0.3
+    value: <%@.+>
+  - score: 1
+    value: '(?i)<%@ Page Language="C#".*\s*\n{0,5}\s*%>'
+  - score: 1
+    value: (?i)<%@\s+import\s+Namespace="System.*"\s*%>
+  - score: 1
+    value: (?i)(?s)<asp:Content.*>.*</asp:Content>
+- language: perl
+  rules:
+  - score: 1
+    value: '^#!/usr/bin/perl'
+  - score: 1
+    value: '^#!/usr/bin/env perl'
+- language: python
+  rules:
+  - score: 1
+    value: '^#!/usr/bin/env python'
+  - score: 1
+    value: '^#!/usr/bin/python'
+
