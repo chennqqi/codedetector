@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -83,6 +84,8 @@ func (sd *ScriptCodeDetector) DetectAll(txt []byte) ([]Result, error) {
 			if t.Score >= 1.0 {
 				r = append(r, t)
 				break
+			} else if t.Score <= -1.0 {
+				break
 			}
 		}
 	}
@@ -94,6 +97,38 @@ func (sd *ScriptCodeDetector) DetectAll(txt []byte) ([]Result, error) {
 
 func (sd *ScriptCodeDetector) DetectBest(txt []byte) (Result, error) {
 	var r []Result
+	for idx := 0; idx < len(sd.dict); idx++ {
+		var t Result
+		t.Language = sd.dict[idx].Language
+		for jdx := 0; jdx < len(sd.dict[idx].Rules); jdx++ {
+			if sd.dict[idx].Rules[jdx].exp.Match(txt) {
+				t.Score += sd.dict[idx].Rules[jdx].Score
+			}
+			if t.Score <= -1.0 {
+				break
+			}
+		}
+	}
+	var maxIdx int
+	for idx := 1; idx < len(r); idx++ {
+		if r[idx].Score > r[maxIdx].Score {
+			maxIdx = idx
+		}
+	}
+
+	return r[maxIdx], nil
+}
+
+func (sd *ScriptCodeDetector) DetectBest2(txt []byte) (Result, error) {
+	newTxt := bytes.Replace(txt, []byte("\r\n"), []byte("\n"))
+	linesofCode := bytes.Split(newTxt, []byte("\n"))
+	linenos := len(linesofCode)
+	neartop := func(line int) {
+		if linenos <= 10 {
+			return true
+		}
+		return line < linenos/10
+	}
 
 	for idx := 0; idx < len(sd.dict); idx++ {
 		var t Result
@@ -102,16 +137,19 @@ func (sd *ScriptCodeDetector) DetectBest(txt []byte) (Result, error) {
 			if sd.dict[idx].Rules[jdx].exp.Match(txt) {
 				t.Score += sd.dict[idx].Rules[jdx].Score
 			}
-			if t.Score >= 1.0 {
-				r = append(r, t)
+			if t.Score <= -1.0 {
 				break
 			}
 		}
 	}
-	if len(r) > 0 {
-		return r, nil
+	var maxIdx int
+	for idx := 1; idx < len(r); idx++ {
+		if r[idx].Score > r[maxIdx].Score {
+			maxIdx = idx
+		}
 	}
-	return r, ErrNotMatch
+
+	return r[maxIdx], nil
 }
 
 func main() {

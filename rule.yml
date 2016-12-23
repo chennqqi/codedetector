@@ -1,7 +1,7 @@
 - language: php
   rules:
   - score: -1
-    value: (?s)<%.*Server\.(Execute|ScriptTimeOut|createobject).*\s*%>
+    value: (?i)(?s)<%.*Server\.(MapPath|Execute|ScriptTimeOut|createobject).*\s*%>
   - score: 1
     value: ^<\?php
   - score: 1
@@ -100,14 +100,16 @@
     value: (?i)(?s)<%.*("Scripting\.Dictionary"|private|public).*%>			
 - language: aspx
   rules:
-  - score: 0.3
-    value: <%@.+>
+  - score: 1
+    value: (?i)(?s)^\s*<%@\s+import\s+Namespace="?System.*"?\s*%>
+  - score: 1
+    value: '(?i)^\s*<%@\s*page\s+language="?C#"?\s*.*%>'
   - score: 1
     value: '(?i)<%@ Page Language="C#".*\s*\n{0,5}\s*%>'
   - score: 1
-    value: (?i)<%@\s+import\s+Namespace="System.*"\s*%>
-  - score: 1
-    value: (?i)(?s)<asp:Content.*>.*</asp:Content>
+    value: (?i)(?s)<asp:Content.*>.*</asp:Content>	
+  - score: 0.3
+    value: <%@.+>	
 - language: perl
   rules:
   - score: 1
