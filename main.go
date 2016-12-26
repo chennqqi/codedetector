@@ -1,17 +1,14 @@
 package main
 
 import (
-	"bytes"
-	"errors"
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"math"
-	"regexp"
 	"strings"
 	"time"
 
 	"github.com/chennqqi/codedetector/detector"
+	"github.com/chennqqi/goutils/utils"
 )
 
 func main() {
@@ -19,7 +16,7 @@ func main() {
 	var name string
 	flag.StringVar(&ext, "e", "php", "set specific languange(default:php)")
 	flag.StringVar(&name, "name", "", "set specific languange(default:php)")
-	flag.IntVar(&verbose, "v", 0, "set verbose(default:0)")
+	//	flag.IntVar(&verbose, "v", 0, "set verbose(default:0)")
 	flag.Parse()
 
 	if name == "" {

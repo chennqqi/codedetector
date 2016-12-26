@@ -8,6 +8,7 @@ import (
 	"regexp"
 
 	"github.com/chennqqi/goutils/yamlconfig"
+	"gopkg.in/yaml.v2"
 )
 
 var (
@@ -30,6 +31,39 @@ type CodeDetector interface {
 
 type ScriptCodeDetector struct {
 	dict Rules
+}
+
+//Load yml rules
+func LoadInteralRules() (CodeDetector, error) {
+	var sd ScriptCodeDetector
+	if err := yaml.Unmarshal(interalRules, &sd.dict); err != nil {
+		return nil, err
+	}
+	for idx := 0; idx < len(sd.dict); idx++ {
+		for jdx := 0; jdx < len(sd.dict[idx].TopRules); jdx++ {
+			if verbose > 2 {
+				fmt.Println(sd.dict[idx].Language, "TopRules:", sd.dict[idx].TopRules[jdx].Value)
+			}
+			sd.dict[idx].TopRules[jdx].exp = regexp.MustCompile(
+				sd.dict[idx].TopRules[jdx].Value)
+		}
+		for jdx := 0; jdx < len(sd.dict[idx].NearTopRules); jdx++ {
+			sd.dict[idx].NearTopRules[jdx].exp = regexp.MustCompile(
+				sd.dict[idx].NearTopRules[jdx].Value)
+			if verbose > 2 {
+				fmt.Println(sd.dict[idx].Language, "NearTopRules:", sd.dict[idx].NearTopRules[jdx].Value)
+			}
+		}
+
+		for jdx := 0; jdx < len(sd.dict[idx].Rules); jdx++ {
+			sd.dict[idx].Rules[jdx].exp = regexp.MustCompile(
+				sd.dict[idx].Rules[jdx].Value)
+			if verbose > 2 {
+				fmt.Println(sd.dict[idx].Language, "Rules:", sd.dict[idx].Rules[jdx].Value)
+			}
+		}
+	}
+	return &sd, nil
 }
 
 //Load yml rules
