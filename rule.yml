@@ -7,7 +7,7 @@
   neartop:
   - score: 2
     value: use( )+\w+(\\\w+)+( )*;
-  - score: 2
+  - score: 3
     value: ^<\?
   - score: -5
     value: ^<\%
@@ -52,23 +52,29 @@
 - language: jsp
   top:
   - score: 100
-    value: ^<%@\s*page\s+language="java.*%>
+    value: '^<%@\s*page\s+language="java.*%>'
   - score: 100
-    value: <%@\s*page\s*import="java.*".*%>
+    value: '<%@\s*page\s*import="java.*".*%>'
   neartop:
   - score: 30
-    value: <%@\s*page\s+language="java
+    value: '<%@\s*page\s+language="java'
   - score: 30
-    value: <%@\s*page\s*import="java\.asp
+    value: '<%@\s*page\s*.*import="java\.'
   - score: 10
     value: \bjava\.io
   rules:
   - score: 2
-    value: \}\s*finally\s*\{
+    value: \}\s*finally\s*\{		
   - score: 2
     value: \bString\b
+  - score: 5
+    value: '(Runtime\.getRuntime|request\.getParameter)'
   - score: -5
     value: (?i)\s+(dim|next)\s+
+  - score: -5
+    value: ^<\?
+  - score: -5
+    value: \?$
   - score: 2
     value: <%.*(request\.getParameter|java\.io).*%>
   - score: 1
@@ -111,6 +117,10 @@
     value: (?i)Response\.(Write|Flush|Buffer|BinaryWrite|ContentType|Charset|AddHeader|redirect)
   - score: 2
     value: (?i)(page\.display\(execute\(|eval|Session\(|Public\s+Sub|Private\s+Sub|Public\s+Function)
+  - score: -5
+    value: \?>$
+  - score: -5
+    value: $<\?
 - language: aspx
   top:
   - score: 100

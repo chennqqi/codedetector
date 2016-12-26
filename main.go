@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"errors"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"math"
@@ -119,7 +120,7 @@ func doCalScore(rules []RuleItem, line []byte) int {
 	var score int
 	for _, rule := range rules {
 		if verbose > 1 {
-			fmt.Print("match:", string(line), rule.Value)
+			fmt.Print("match: ", string(line), rule.Value)
 		}
 		if rule.exp.Match(line) {
 			score += rule.Score
@@ -161,7 +162,7 @@ BREAK_FOR:
 	linesofCode := bytes.Split(newTxt, []byte("\n"))
 	linecount := len(linesofCode)
 	neartop := func(line int) bool {
-		if linecount <= 10 {
+		if line <= 10 {
 			return true
 		}
 		return line < linecount/10
@@ -197,11 +198,14 @@ BREAK_FOR:
 		var t Result
 		t.Language = sd.dict[idx].Language
 		for lineidx, _ := range valididxMap {
+			if verbose > 2 {
+				fmt.Println("domatch:", lineidx, string(linesofCode[lineidx]))
+			}
 			if neartop(lineidx) {
-				t.Score += doCalScore(sd.dict[idx].NearTopRules, linesofCode[lineidx])
-				if verbose > 1 {
-					fmt.Println(sd.dict[idx].NearTopRules)
+				if verbose > 2 {
+					fmt.Println("neartop:", lineidx)
 				}
+				t.Score += doCalScore(sd.dict[idx].NearTopRules, linesofCode[lineidx])
 			}
 			t.Score += doCalScore(sd.dict[idx].Rules, linesofCode[lineidx])
 		}
@@ -226,6 +230,17 @@ BREAK_FOR:
 }
 
 func main() {
+	var ext string
+	var name string
+	flag.StringVar(&ext, "e", "php", "set specific languange(default:php)")
+	flag.StringVar(&name, "name", "", "set specific languange(default:php)")
+	flag.IntVar(&verbose, "v", 0, "set verbose(default:0)")
+	flag.Parse()
+
+	if name == "" {
+		name = ext
+	}
+
 	det, err := LoadRules("rule.yml")
 	if err != nil {
 		fmt.Println(err)
@@ -235,9 +250,9 @@ func main() {
 	var dcount, ndcount float64
 	t := time.Now()
 
-	language := "jsp"
+	language := ext
 	utils.DoWalkDir("E:/centosshare/webshell/WebSHArk/WebSHArk", "", func(fileName string, isdir bool) error {
-		if !isdir && strings.HasSuffix(fileName, language) {
+		if !isdir && strings.HasSuffix(fileName, name) {
 			txt, err := ioutil.ReadFile(fileName)
 			if err != nil {
 				fmt.Println(err)
