@@ -26,7 +26,7 @@ func main() {
 		name = ext
 	}
 
-	det, err := LoadInteralRules("rule.yml")
+	det, err := detector.LoadInteralRules("rule.yml")
 	if err != nil {
 		fmt.Println(err)
 		return
