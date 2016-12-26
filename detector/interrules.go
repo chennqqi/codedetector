@@ -1,7 +1,6 @@
 package detector
 
-var interalRules :=
-`- language: php
+var interalRules string = `- language: php
   top:
   - score: 100
     value: ^<\?php

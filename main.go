@@ -4,7 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"strings"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/chennqqi/codedetector/detector"
@@ -12,44 +13,48 @@ import (
 )
 
 func main() {
-	var ext string
-	var name string
-	flag.StringVar(&ext, "e", "php", "set specific languange(default:php)")
-	flag.StringVar(&name, "name", "", "set specific languange(default:php)")
-	//	flag.IntVar(&verbose, "v", 0, "set verbose(default:0)")
+	var fileName string
+	var dirName string
+	flag.StringVar(&dirName, "d", "", "set working in dir mode(<-d/-f> is must")
+	flag.StringVar(&fileName, "f", "", "set target file path(<-d/-f> is must")
 	flag.Parse()
 
-	if name == "" {
-		name = ext
-	}
-
-	det, err := detector.LoadInteralRules("rule.yml")
+	det, err := detector.LoadInteralRules()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	//fmt.Println("Indexs:", det.GetRuleIndex())
+
+	baseName := filepath.Base(os.Args[0])
+	if dirName == "" && fileName == "" {
+		fmt.Println("usage: ", baseName, "<-f targetName/-d targetdir>")
+		return
+	}
+	if fileName != "" {
+		txt, err := ioutil.ReadFile(fileName)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		r, err := det.Detect(txt)
+		fmt.Println(fileName, r)
+		return
+	}
+
 	var dcount, ndcount float64
 	t := time.Now()
 
-	language := ext
-	utils.DoWalkDir("E:/centosshare/webshell/WebSHArk/WebSHArk", "", func(fileName string, isdir bool) error {
-		if !isdir && strings.HasSuffix(fileName, name) {
+	utils.DoWalkDir(dirName, "", func(fileName string, isdir bool) error {
+		if !isdir {
 			txt, err := ioutil.ReadFile(fileName)
 			if err != nil {
 				fmt.Println(err)
 			} else {
-				r, _ := det.DetectBest(txt)
-				if r.Language != language {
-					ndcount += 1
-					fmt.Println(fileName, r)
-				} else {
-					dcount += 1
-					//fmt.Println("[OK]", fileName, r)
-				}
+				r, _ := det.Detect(txt)
+				fmt.Println("[OK]", fileName, r)
 			}
 		}
 		return nil
 	})
-	fmt.Println("识别率为", dcount/(dcount+ndcount), dcount+ndcount, "cost", time.Now().Sub(t))
+	fmt.Println("Rate", dcount/(dcount+ndcount), dcount+ndcount, "cost", time.Now().Sub(t))
 }

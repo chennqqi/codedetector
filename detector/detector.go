@@ -36,7 +36,7 @@ type ScriptCodeDetector struct {
 //Load yml rules
 func LoadInteralRules() (CodeDetector, error) {
 	var sd ScriptCodeDetector
-	if err := yaml.Unmarshal(interalRules, &sd.dict); err != nil {
+	if err := yaml.Unmarshal([]byte(interalRules), &sd.dict); err != nil {
 		return nil, err
 	}
 	for idx := 0; idx < len(sd.dict); idx++ {
