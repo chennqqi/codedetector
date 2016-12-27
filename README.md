@@ -39,7 +39,7 @@ go get github.com/chennqqi/codedetector
 
 ## known issue
  
- if code type GBK/UTF-16 text may not work correctly.  
+ if code type UTF-16(two bytes ANSCI) text may not work correctly.  
 
 ## License
 Apache2
